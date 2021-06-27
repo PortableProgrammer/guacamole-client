@@ -12,14 +12,12 @@ ARG GUACAMOLE_VERSION=1.3.0
 # Start with the official Tomcat distribution
 FROM tomcat:${TOMCAT_VERSION}-${TOMCAT_JRE}
 
-# This is where the build artifacts go in the runtime image
-WORKDIR /opt/guacamole
-
 # Copy the download script
-COPY ./scripts/* /opt/guacamole/bin
+COPY ./scripts/* /opt/install/
 
 # Run the download
-RUN /opt/guacamole/bin/get-guacamole-artifacts.sh ${GUACAMOLE_VERSION} /opt/guacamole
+RUN /opt/install/get-guacamole-artifacts.sh ${GUACAMOLE_VERSION} /opt/guacamole \
+    && rm -rf /opt/install
 
 # Create a new user guacamole
 ARG UID=1001
