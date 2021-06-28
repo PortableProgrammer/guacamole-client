@@ -17,22 +17,7 @@
 GUACAMOLE_VERSION="$1"
 DESTINATION="$2"
 
-##
-## Prints usage information for this shell script and exits with an error code.
-## Calling this function will immediately terminate execution of the script.
-##
-incorrect_usage() {
-    cat <<END
-USAGE: get-guacamole-artifacts.sh <version> <destination>
-END
-    exit 1
-}
-
-# Validate parameters
-if [ "$#" -ne 2 ]; then
-    echo "Wrong number of arguments."
-    incorrect_usage
-fi
+echo "Installing Guacamole version ${GUACAMOLE_VERSION} into ${DESTINATION}"
 
 #
 # Create destination, if it does not yet exist
@@ -246,6 +231,7 @@ if [ -f $DESTINATION/downloads/* ]; then
     echo "WARNING! Downloads directory still contains packages:"
     ls -1
     echo "You must remove the extra downloads and the directory manually."
+    exit 1
 else
     rm -rf $DESTINATION/downloads
     echo "Done."
