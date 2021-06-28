@@ -6,7 +6,8 @@
 # such as `--build-arg TOMCAT_JRE=jre8-alpine`
 #
 ARG TOMCAT_VERSION=8.5
-ARG TOMCAT_JRE=jdk8
+# Default to a version that supports armv7 as well as arm64
+ARG TOMCAT_JRE=jdk8-adoptopenjdk-hotspot
 ARG GUACAMOLE_VERSION=1.3.0
 
 # Start with the official Tomcat distribution
