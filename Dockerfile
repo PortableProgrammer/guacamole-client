@@ -15,7 +15,7 @@ FROM tomcat:${TOMCAT_VERSION}-${TOMCAT_JRE}
 # Use arg for Guacamole version to allow image builder to choose alternatives
 # such as `--build-arg GUACAMOLE_VERSION=1.2.0`
 #
-ARG GUACAMOLE_VERSION=1.3.0
+ARG GUACAMOLE_VERSION=1.4.0
 
 # Set up the artifact directory
 WORKDIR /opt/guacamole
