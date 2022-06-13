@@ -31,3 +31,5 @@ jobs:
           debug: true
           # Fail when no release was found
           throwing: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
