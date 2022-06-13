@@ -16,12 +16,18 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      - name: Get Latest Release Tag
+      - name: Get Release
         # You may pin to the exact commit or the version.
-        # uses: ctrlaltdev/latest-release-json-action@cdd9e774cdf4ef4f2c4caa4581236c31e1f43249
-        uses: ctrlaltdev/latest-release-json-action@v1.0.1
+        # uses: joutvhu/get-release@892bd55b92fd5a79f97836964d6abc7b81bb1bdd
+        uses: joutvhu/get-release@v1.0.1
         with:
-          # JSON of GitHub Releases
-          releases: 'apache/guacamole-client'
-          # If you want the version to be prefixed with `v`
-          prefixed: true # default is false
+          # The name of the owner of the repo. Used to identify the owner of the repository.
+          owner: apache
+          # The name of the repository. Used to identify the repository on which to release.
+          repo: guacamole-client
+          # Should get latest release?
+          latest: true
+          # Show ouputs
+          debug: true
+          # Fail when no release was found
+          throwing: true
