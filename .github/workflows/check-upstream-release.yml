@@ -26,7 +26,7 @@ jobs:
           # The name of the repository. Used to identify the repository on which to release.
           repo: guacamole-client
           # Should get latest release?
-          latest: true
+          latest: false
           # Show ouputs
           debug: true
           # Fail when no release was found
