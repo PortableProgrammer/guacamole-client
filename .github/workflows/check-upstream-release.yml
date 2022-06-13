@@ -42,7 +42,7 @@ jobs:
       # If the latest Guacamole tag doesn't match our latest release, and also doesn't end in '-RCx',
       # Create a new release for the Guacamole tag
       - name: Create Release 
-        if: ${{ steps.latest_release.outputs.release }} != "v${{ fromJSON(steps.latest_tag.outputs.tags)[0] }}"
+        if: ${{ steps.latest_release.outputs.release != 'v' + fromJSON(steps.latest_tag.outputs.tags)[0] }}
         run: | 
           echo "Creating release v${{ fromJSON(steps.latest_tag.outputs.tags)[0] }}"
         
