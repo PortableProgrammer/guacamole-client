@@ -63,7 +63,7 @@ jobs:
       
       # Create a new release for the Guacamole tag
       - name: Create Release
-        if: ${{ sucess() }}
+        if: ${{ success() }}
         #run: | 
         #  echo "Creating release ${{ format('v{0}',fromJSON(steps.latest_tag.outputs.tags)[0]) }}"
         uses: ncipollo/release-action@v1.10.0
