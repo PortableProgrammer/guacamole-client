@@ -23,7 +23,7 @@ jobs:
       
       - name: Get Latest Tag
         id: latest_tag
-        uses: oraad/get-tags-action@v1
+        uses: oraad/get-tags-action@v1.0.0
         with:
           repo: apache/guacamole-client
           limit: 1
