@@ -24,7 +24,7 @@ jobs:
       # Check the Guacamole tag we got back
       - name: Check Output
         run: |
-          echo "Latest Guacamole - ${{ steps.latest_tag.outputs.tags[0] }}"
+          echo "Latest Guacamole - ${{ fromJSON(steps.latest_tag.outputs.tags)[0] }}"
       
       # Get our latest release
       # Format: 'vMajor.minor.rev'
@@ -37,12 +37,12 @@ jobs:
       # Check the local release we got back
       - name: Check Output
         run: |
-          echo "Latest Local - ${{ steps.latest_reelase.outputs.release }}"
+          echo "Latest Local - ${{ steps.latest_release.outputs.release }}"
           
       # If the latest Guacamole tag doesn't match our latest release, and also doesn't end in '-RCx',
       # Create a new release for the Guacamole tag
       - name: Create Release 
-        if: ${{ steps.latest_release.outputs.release }} != "v${{ steps.latest_tag.outputs.tags[0] }}"
+        if: ${{ steps.latest_release.outputs.release }} != "v${{ fromJSON(steps.latest_tag.outputs.tags)[0] }}"
         run: | 
-          echo "Creating release v${{ steps.latest_tag.outputs.tags[0] }}"
+          echo "Creating release v${{ fromJSON(steps.latest_tag.outputs.tags)[0] }}"
         
