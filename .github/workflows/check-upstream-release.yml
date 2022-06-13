@@ -21,10 +21,10 @@ jobs:
           repo: apache/guacamole-client
           limit: 1
       
-      # Check the tag we got back
+      # Check the Guacamole tag we got back
       - name: Check Output
         run: |
-          echo "Latest Tag - ${{ steps.latest_tag.outputs.tags }}"
+          echo "Latest Guacamole - ${{ steps.latest_tag.outputs.tags[0] }}"
       
       # Get our latest release
       # Format: 'vMajor.minor.rev'
@@ -33,11 +33,16 @@ jobs:
         uses: pozetroninc/github-action-get-latest-release@v0.5.0
         with:
           repository: ${{ github.repository }}
-      
+          
+      # Check the local release we got back
+      - name: Check Output
+        run: |
+          echo "Latest Local - ${{ steps.latest_reelase.outputs.release }}"
+          
       # If the latest Guacamole tag doesn't match our latest release, and also doesn't end in '-RCx',
       # Create a new release for the Guacamole tag
       - name: Create Release 
-        if: ${{ steps.latest_release.outputs.release }} != ${{ steps.latest_tag.outputs.tags }}
+        if: ${{ steps.latest_release.outputs.release }} != "v${{ steps.latest_tag.outputs.tags[0] }}"
         run: | 
-          echo "Creating release v${{ steps.latest_tag.outputs.tags }}"
+          echo "Creating release v${{ steps.latest_tag.outputs.tags[0] }}"
         
