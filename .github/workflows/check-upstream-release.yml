@@ -44,5 +44,5 @@ jobs:
       - name: Create Release 
         if: ${{ !contains('-RC', fromJSON(steps.latest_tag.outputs.tags)[0]) && !endsWith(steps.latest_release.outputs.release, fromJSON(steps.latest_tag.outputs.tags)[0]) }}
         run: | 
-          echo "Creating release ${{ join(['v',fromJSON(steps.latest_tag.outputs.tags)[0]], '') }}"
+          echo "Creating release ${{ format('v{0}',fromJSON(steps.latest_tag.outputs.tags)[0]) }}"
         
