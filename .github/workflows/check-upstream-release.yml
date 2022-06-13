@@ -1,4 +1,4 @@
-# This is a basic workflow to help you get started with Actions
+# Checks for new upstream releases and creates matching local releases
 
 name: Check Upstream Release
 
@@ -12,23 +12,32 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Get the latest Guacamole Docker tag
-      #- name: Get Docker Hub Tag
-      #  uses: jacobtomlinson/gha-get-docker-hub-tags@0.1.3
-      #  with:
-      #    # The Docker Hub org
-      #    org: 'guacamole'
-      #    # The Docker Hub repo
-      #    repo: 'guacamole'
-      
-      - name: Get Latest Tag
+      # Get the latest Guacamole tag
+      # Format: 'Major.minor.rev(-RCcandidate)?'
+      - name: Get Latest Guacamole Tag
         id: latest_tag
         uses: oraad/get-tags-action@v1.0.0
         with:
           repo: apache/guacamole-client
           limit: 1
       
-      # Use the tag we got back
-      - name: Check outputs
+      # Check the tag we got back
+      - name: Check Output
         run: |
           echo "Latest Tag - ${{ steps.latest_tag.outputs.tags }}"
+      
+      # Get our latest release
+      # Format: 'vMajor.minor.rev'
+      - name: Get Latest Local Release
+        id: latest_release
+        uses: pozetroninc/github-action-get-latest-release@v0.5.0
+        with:
+          repository: ${{ github.repository }}
+      
+      # If the latest Guacamole tag doesn't match our latest release, and also doesn't end in '-RCx',
+      # Create a new release for the Guacamole tag
+      - name: Create Release 
+        if: ${{ steps.latest_release.outputs.release }} != ${{ steps.latest_tag.outputs.tags }}
+        run: | 
+          echo "Creating release v${{ steps.latest_tag.outputs.tags }}"
+        
