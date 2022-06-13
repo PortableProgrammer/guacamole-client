@@ -10,7 +10,9 @@ on:
 jobs:
   get-latest-release:
     runs-on: ubuntu-latest
-
+    permissions:
+      contents: write
+      
     steps:
       # Get the latest Guacamole tag
       # Format: 'Major.minor.rev(-RCcandidate)?'
@@ -39,10 +41,33 @@ jobs:
         run: |
           echo "Latest Local - ${{ steps.latest_release.outputs.release }}"
           
-      # If the latest Guacamole tag doesn't match our latest release, and also doesn't end in '-RCx',
-      # Create a new release for the Guacamole tag
-      - name: Create Release 
-        if: ${{ !contains('-RC', fromJSON(steps.latest_tag.outputs.tags)[0]) && !endsWith(steps.latest_release.outputs.release, fromJSON(steps.latest_tag.outputs.tags)[0]) }}
-        run: | 
+      # If the latest Guacamole tag doesn't match our latest release, and also doesn't contain a dash (-),
+      - name: Compare Versions
+        id: compare_versions
+        if: ${{ !contains('-', fromJSON(steps.latest_tag.outputs.tags)[0]) && !endsWith(steps.latest_release.outputs.release, fromJSON(steps.latest_tag.outputs.tags)[0]) }}
+        run: |
           echo "Creating release ${{ format('v{0}',fromJSON(steps.latest_tag.outputs.tags)[0]) }}"
+      
+      # Checkout the code for a commit
+      #- name: Checkout
+      #  if: ${{ success() }}
+      #  uses: actions/checkout@v2
         
+      # Create a commit for this release
+      #- name: Commit
+      #  id: commit
+      #  if: ${{ success() }}
+      #  uses: zwaldowski/git-commit-action@v1
+      #  with:
+      #    commit_message: Bumping version to ${{ format('v{0}',fromJSON(steps.latest_tag.outputs.tags)[0]) }}
+      
+      # Create a new release for the Guacamole tag
+      - name: Create Release
+        if: ${{ sucess() }}
+        #run: | 
+        #  echo "Creating release ${{ format('v{0}',fromJSON(steps.latest_tag.outputs.tags)[0]) }}"
+        uses: ncipollo/release-action@v1.10.0
+        with:
+          tag: ${{ format('v{0}',fromJSON(steps.latest_tag.outputs.tags)[0]) }}
+          #commit: ${{ steps.commit.outputs.sha }}
+          commit: main
