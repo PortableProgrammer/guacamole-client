@@ -50,24 +50,21 @@ jobs:
       
       # Checkout the code for a commit
       #- name: Checkout
-      #  if: ${{ success() }}
+      #  if: ${{ !contains('-', fromJSON(steps.latest_tag.outputs.tags)[0]) && !endsWith(steps.latest_release.outputs.release, fromJSON(steps.latest_tag.outputs.tags)[0]) }}
       #  uses: actions/checkout@v2
         
       # Create a commit for this release
       #- name: Commit
       #  id: commit
-      #  if: ${{ success() }}
+      #  if: ${{ !contains('-', fromJSON(steps.latest_tag.outputs.tags)[0]) && !endsWith(steps.latest_release.outputs.release, fromJSON(steps.latest_tag.outputs.tags)[0]) }}
       #  uses: zwaldowski/git-commit-action@v1
       #  with:
       #    commit_message: Bumping version to ${{ format('v{0}',fromJSON(steps.latest_tag.outputs.tags)[0]) }}
       
       # Create a new release for the Guacamole tag
       - name: Create Release
-        if: ${{ success() }}
-        #run: | 
-        #  echo "Creating release ${{ format('v{0}',fromJSON(steps.latest_tag.outputs.tags)[0]) }}"
+        if: ${{ !contains('-', fromJSON(steps.latest_tag.outputs.tags)[0]) && !endsWith(steps.latest_release.outputs.release, fromJSON(steps.latest_tag.outputs.tags)[0]) }}
         uses: ncipollo/release-action@v1.10.0
         with:
           tag: ${{ format('v{0}',fromJSON(steps.latest_tag.outputs.tags)[0]) }}
-          #commit: ${{ steps.commit.outputs.sha }}
           commit: main
