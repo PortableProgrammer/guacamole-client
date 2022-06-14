@@ -1,4 +1,4 @@
-# This is a basic workflow to help you get started with Actions
+# Checks for new upstream releases and creates matching local releases
 
 name: Check Upstream Release
 
@@ -7,29 +7,64 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
   get-latest-release:
-    # The type of runner that the job will run on
     runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
+    permissions:
+      contents: write
+      
     steps:
-      - name: Get Release
-        # You may pin to the exact commit or the version.
-        # uses: joutvhu/get-release@892bd55b92fd5a79f97836964d6abc7b81bb1bdd
-        uses: joutvhu/get-release@v1.0.1
+      # Get the latest Guacamole tag
+      # Format: 'Major.minor.rev(-RCcandidate)?'
+      - name: Get Latest Guacamole Tag
+        id: latest_tag
+        uses: oraad/get-tags-action@v1.0.0
         with:
-          # The name of the owner of the repo. Used to identify the owner of the repository.
-          owner: apache
-          # The name of the repository. Used to identify the repository on which to release.
-          repo: guacamole-client
-          # Should get latest release?
-          latest: true
-          # Show ouputs
-          debug: true
-          # Fail when no release was found
-          throwing: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          repo: apache/guacamole-client
+          limit: 1
+      
+      # Check the Guacamole tag we got back
+      - name: Check Output
+        run: |
+          echo "Latest Guacamole - ${{ fromJSON(steps.latest_tag.outputs.tags)[0] }}"
+      
+      # Get our latest release
+      # Format: 'vMajor.minor.rev'
+      - name: Get Latest Local Release
+        id: latest_release
+        uses: pozetroninc/github-action-get-latest-release@v0.5.0
+        with:
+          repository: ${{ github.repository }}
+          
+      # Check the local release we got back
+      - name: Check Output
+        run: |
+          echo "Latest Local - ${{ steps.latest_release.outputs.release }}"
+          
+      # If the latest Guacamole tag doesn't match our latest release,
+      - name: Compare Versions
+        id: compare_versions
+        if: ${{ !contains('-', fromJSON(steps.latest_tag.outputs.tags)[0]) && !endsWith(steps.latest_release.outputs.release, fromJSON(steps.latest_tag.outputs.tags)[0]) }}
+        run: |
+          echo "Creating release ${{ format('v{0}',fromJSON(steps.latest_tag.outputs.tags)[0]) }}"
+      
+      # Checkout the code for a commit
+      #- name: Checkout
+      #  if: ${{ !contains('-', fromJSON(steps.latest_tag.outputs.tags)[0]) && !endsWith(steps.latest_release.outputs.release, fromJSON(steps.latest_tag.outputs.tags)[0]) }}
+      #  uses: actions/checkout@v2
+        
+      # Create a commit for this release
+      #- name: Commit
+      #  id: commit
+      #  if: ${{ !contains('-', fromJSON(steps.latest_tag.outputs.tags)[0]) && !endsWith(steps.latest_release.outputs.release, fromJSON(steps.latest_tag.outputs.tags)[0]) }}
+      #  uses: zwaldowski/git-commit-action@v1
+      #  with:
+      #    commit_message: Bumping version to ${{ format('v{0}',fromJSON(steps.latest_tag.outputs.tags)[0]) }}
+      
+      # Create a new release for the Guacamole tag
+      - name: Create Release
+        if: ${{ !contains('-', fromJSON(steps.latest_tag.outputs.tags)[0]) && !endsWith(steps.latest_release.outputs.release, fromJSON(steps.latest_tag.outputs.tags)[0]) }}
+        uses: ncipollo/release-action@v1.10.0
+        with:
+          tag: ${{ format('v{0}',fromJSON(steps.latest_tag.outputs.tags)[0]) }}
+          commit: main
