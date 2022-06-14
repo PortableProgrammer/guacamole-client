@@ -4,7 +4,11 @@ name: Check Upstream Release
 
 # Controls when the workflow will run
 on:
-  # Allows you to run this workflow manually from the Actions tab
+  # Weekdays at 0700 UTC / 0000 or 0100 MT
+  schedule:
+    - cron: '0 7 * * 1-5'
+    
+  # Manual
   workflow_dispatch:
 
 jobs:
