@@ -1,4 +1,4 @@
-name: ci
+name: docker-build
 
 on:
   pull_request:
@@ -22,8 +22,10 @@ jobs:
           DOCKER_IMAGE=portableprogrammer/guacamole
           DOCKER_PLATFORMS=linux/amd64,linux/arm/v7,linux/arm64/v8
           VERSION=edge
+          GUACAMOLE_VERSION=1.0.0
           if [[ $GITHUB_REF == refs/tags/* ]]; then
             VERSION=${GITHUB_REF#refs/tags/v}
+            GUACAMOLE_VERSION=${GITHUB_REF#refs/tags/v#v}
           fi
           
           TAGS="--tag ${DOCKER_IMAGE}:${VERSION}"
@@ -34,6 +36,7 @@ jobs:
           echo ::set-output name=version::${VERSION}
           echo ::set-output name=buildx_args::--platform ${DOCKER_PLATFORMS} \
             --build-arg VERSION=${VERSION} \
+            --build-arg GUACAMOLE_VERSION=${GUACAMOLE_VERSION} \
             --build-arg BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ') \
             --build-arg VCS_REF=${GITHUB_SHA::8} \
             ${TAGS} --file ./Dockerfile ./
